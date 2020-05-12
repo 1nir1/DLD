@@ -1,5 +1,8 @@
 import csv
 import matplotlib.pyplot as plt
+import statistics
+import numpy as np
+from numpy.polynomial.polynomial import polyfit
 
 def DoesPointsCollide(point1, point2):
     doesXCollide = True # point1._x + point1._radius >= point2._x - point2._radius or point1._x - point1._radius <= point2._x + point2._radius
@@ -60,8 +63,12 @@ class Line:
 
         return (outputX, outputY)
 
+    def GetAverageY(self):
+        yValues = (point._y for point in self._points)
+        return statistics.median(yValues)
+
 points = []
-with open('Results.csv', newline='') as csvfile:
+with open('ResultsFilteredSmallPoints.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         xMid = row['XM']
@@ -97,12 +104,18 @@ for point in points:
 
 with open('out.txt', 'w') as f:
     for line in lines:
-        (xCoordinates, yCoordinatess) = line.GetCoordiantes()
-        plt.plot(xCoordinates, yCoordinatess)
-
-        print("new line", file=f)
+        (xCoordinates, yCoordinates) = line.GetCoordiantes()
+        x = np.asarray(xCoordinates) 
+        y = np.asarray(yCoordinates)
+        plt.plot(x, y)
+        b, m = polyfit(x, y, 1)
+        plt.plot(x, b + m * x, '-')
+        print("new line {0}".format(line.GetAverageY()), file=f)
         print(line._points, file=f)
 
+ax=plt.gca()
+ax.xaxis.tick_top() 
+ax.invert_yaxis()
 plt.show()
 #print("{0} {1}".format(points[1], points[2]))
 
