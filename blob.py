@@ -41,17 +41,19 @@ class Line:
         return False
     
     def GetCoordiantes(self):
-        outputX = []
-        outputY = []
-        for point in self._points:
-            outputX.append(point._x)
-            outputY.append(point._y)
+        outputX = [point._x for point in self._points]
+        outputY = [point._y for point in self._points]
 
         return (outputX, outputY)
 
-    def GetAverageY(self):
-        yValues = (point._y for point in self._points)
-        return statistics.median(yValues)
+    def GetAverageRadius(self):
+        radiusValues = (point._radius for point in self._points)
+        return statistics.median(radiusValues)
+
+    # def FilterPointsAccordingToActualYValues(self, actualYValues):
+    #     averageRadius = self.GetAverageRadius()
+    #     for point in self._points:
+    #         if point._y < 
 
 points = []
 with open('ResultsFilteredSmallPoints.csv', newline='') as csvfile:
@@ -87,9 +89,12 @@ with open('out.txt', 'w') as f:
         y = np.asarray(yCoordinates)
         plt.plot(x, y)
         b, m = polyfit(x, y, 1)
-        plt.plot(x, b + m * x, '-')
-        print("new line {0}".format(line.GetAverageY()), file=f)
+        actualYValues = b + m * x
+        plt.plot(x, actualYValues, '-')
+        print("new line, average radius: {0}".format(line.GetAverageRadius()), file=f)
         print(line._points, file=f)
+        # linearLine = Line(x, actualYValues)
+        # TODO line.FilterPointsAccordingToActualYValues(new Dic {x : actualYValues})
 
 ax=plt.gca()
 ax.xaxis.tick_top() 
