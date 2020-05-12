@@ -4,13 +4,6 @@ import statistics
 import numpy as np
 from numpy.polynomial.polynomial import polyfit
 
-def DoesPointsCollide(point1, point2):
-    doesXCollide = True # point1._x + point1._radius >= point2._x - point2._radius or point1._x - point1._radius <= point2._x + point2._radius
-    doesYCollide = point1._y + point1._radius <= point2._y - point2._radius or point1._y - point1._radius >= point2._y + point2._radius
-
-    return doesXCollide and doesYCollide
-
-
 class Point: 
     def __init__(self, x, y, feret):
         self._x = float(x)
@@ -44,13 +37,6 @@ class Line:
             if point._y - point._radius < self._smalletYPoint._y + self._smalletYPoint._radius:
                 self._smalletYPoint = point
             return True
-        # if DoesPointsCollide(point, self._smalletYPoint) or DoesPointsCollide(point, self._biggestYPoint):
-        #     self._points.append(point)
-        #     if(point._y + point._radius > self._biggestYPoint._y + self._biggestYPoint._radius):
-        #         self._biggestYPoint = point
-        #     if(point._y - point._radius < self._smalletYPoint._y - self._smalletYPoint._radius):
-        #         self._smalletYPoint = point
-        #     return True
         
         return False
     
@@ -76,15 +62,9 @@ with open('ResultsFilteredSmallPoints.csv', newline='') as csvfile:
         feret = row['Feret']
         if  xMid != '' and  yMid != '' and feret != '':
             point = Point(xMid, yMid, feret)
-            print(point)
             points.append(point)
-            # xPoints.append(row['XM'])
-            # yPoints.append(row['YM'])
 
-print("--------------- sorted -------------")
 points.sort(key=lambda point: point._x)
-print(points)
-print("---------done----------")
 
 lines = []
 i = 0
@@ -92,12 +72,10 @@ for point in points:
     foundLine = False
     for line in lines:
         if(line.TryToAddPoint(point)):
-            print("{0} found line".format(point))
             foundLine = True
             break
     
     if foundLine is False:
-        print("{0} started new line".format(point))
         line = Line()
         line.TryToAddPoint(point)
         lines.append(line)
@@ -117,10 +95,3 @@ ax=plt.gca()
 ax.xaxis.tick_top() 
 ax.invert_yaxis()
 plt.show()
-#print("{0} {1}".format(points[1], points[2]))
-
-# print("xPoints {0}".format(xPoints))
-# print("yPoints {0}".format(yPoints))
-
-# yPoints.sort(key = float)
-# print("sorted yPoints {0}".format(yPoints))
