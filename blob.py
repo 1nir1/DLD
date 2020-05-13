@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import statistics
 import numpy as np
 from numpy.polynomial.polynomial import polyfit
+from math import hypot
 
 class Point: 
     def __init__(self, x, y, feret):
@@ -50,23 +51,34 @@ class Line:
         radiusValues = (point._radius for point in self._points)
         return statistics.median(radiusValues)
 
-    # def FilterPointsAccordingToActualYValues(self, actualYValues):
+    def Size(self):
+        return len(self._points)
+    # def FilterPointsAccordingToyValuesAfterPolyfit(self, yValuesAfterPolyfit):
     #     averageRadius = self.GetAverageRadius()
     #     for point in self._points:
     #         if point._y < 
 
+# TODO CONFIGURABLE BY USER #
+minArea = 1
+maxArea = 15
+#############################
+
 points = []
-with open('ResultsFilteredSmallPoints.csv', newline='') as csvfile:
+with open('Results_new.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
+        area = row['Area']
         xMid = row['XM']
         yMid = row['YM']
         feret = row['Feret']
-        if  xMid != '' and  yMid != '' and feret != '':
-            point = Point(xMid, yMid, feret)
-            points.append(point)
+        if  xMid != '' and  yMid != '' and feret != '' and area != '':
+            floatArea = float(area)
+            if floatArea > minArea and floatArea < maxArea:
+                point = Point(xMid, yMid, feret)
+                points.append(point)
 
 points.sort(key=lambda point: point._x)
+deltaX = points[-1]._x - points[0]._x
 
 lines = []
 i = 0
@@ -82,19 +94,26 @@ for point in points:
         line.TryToAddPoint(point)
         lines.append(line)
 
+filteredLines = [line for line in lines if line.Size() > 1]
 with open('out.txt', 'w') as f:
-    for line in lines:
+    for line in filteredLines:
         (xCoordinates, yCoordinates) = line.GetCoordiantes()
         x = np.asarray(xCoordinates) 
         y = np.asarray(yCoordinates)
-        plt.plot(x, y)
         b, m = polyfit(x, y, 1)
-        actualYValues = b + m * x
-        plt.plot(x, actualYValues, '-')
+        yValuesAfterPolyfit = b + m * x
+        lineLength = hypot(x[-1] - x[0], yValuesAfterPolyfit[-1] - yValuesAfterPolyfit[0])
+        if lineLength < 0.7 * deltaX:
+            continue
+        plt.plot(x, y)
+        plt.plot(x, yValuesAfterPolyfit, '-')
         print("new line, average radius: {0}".format(line.GetAverageRadius()), file=f)
         print(line._points, file=f)
-        # linearLine = Line(x, actualYValues)
-        # TODO line.FilterPointsAccordingToActualYValues(new Dic {x : actualYValues})
+        # linearLine = Line(x, yValuesAfterPolyfit)
+        dictionary = dict(zip(x, yValuesAfterPolyfit))
+        #print(dictionary)
+        #dic = { x : yValuesAfterPolyfit}
+        # TODO line.FilterPointsAccordingToyValuesAfterPolyfit(new Dic {x : yValuesAfterPolyfit})
 
 ax=plt.gca()
 ax.xaxis.tick_top() 
