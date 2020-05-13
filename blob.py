@@ -30,13 +30,15 @@ class Line:
             self._smalletYPoint = point
             return True
         
-        if point._y - point._radius <= self._biggestYPoint._y + self._biggestYPoint._radius and point._y + point._radius >= self._biggestYPoint._y - self._biggestYPoint._radius \
-        or point._y + point._radius >= self._smalletYPoint._y - point._radius and point._y - point._radius <= self._smalletYPoint._y + point._radius:
+        if point._y - point._radius <= self._biggestYPoint._y + self._biggestYPoint._radius and point._y + point._radius >= self._smalletYPoint._y - self._smalletYPoint._radius:
             self._points.append(point)
+            
             if point._y + point._radius > self._biggestYPoint._y + self._biggestYPoint._radius:
                 self._biggestYPoint = point
-            if point._y - point._radius < self._smalletYPoint._y + self._smalletYPoint._radius:
+            
+            if point._y - point._radius < self._smalletYPoint._y - self._smalletYPoint._radius:
                 self._smalletYPoint = point
+            
             return True
         
         return False
@@ -64,7 +66,7 @@ maxArea = 15
 #############################
 
 points = []
-with open('Results_new.csv', newline='') as csvfile:
+with open('Results-filter_new.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         area = row['Area']
