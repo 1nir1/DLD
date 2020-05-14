@@ -14,7 +14,7 @@ def ExtractPointsByArea(file, minArea, maxArea):
 
             if  xMid != '' and  yMid != '' and feret != '' and area != '':
                 floatArea = float(area)
-                if floatArea > minArea and floatArea < maxArea:
+                if floatArea >= minArea and floatArea <= maxArea:
                     point = Point(xMid, yMid, feret)
                     points.append(point)
 
