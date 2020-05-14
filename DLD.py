@@ -9,7 +9,7 @@ from Models.DataExtractor import ExtractPointsByArea
 # TODO CONFIGURABLE BY USER #
 minArea = 1
 maxArea = 15
-file = 'Results-filter_new.csv'
+file = 'Results.csv'
 #############################
 
 points = ExtractPointsByArea(file, minArea, maxArea)
@@ -17,24 +17,23 @@ points.sort(key=lambda point: point._x)
 deltaX = points[-1]._x - points[0]._x
 
 lines = []
+
 for point in points:
-    foundLine = False
-    lineProximities = {line.GetPointProximityValue(point): line for line in lines}
+    validLines = [line for line in lines if line.CanPointBeAdded(point)]
+
+    lineProximities = {line.GetPointProximityValue(point): line for line in validLines}
     print("lineProximities {0}".format(lineProximities))
         
     if len(lineProximities) > 0:
         firstKey = sorted(lineProximities.keys())[0]
         bestLine = lineProximities[firstKey]
-
-        if(bestLine.TryToAddPoint(point)):
-            # INSTEAD - get result from line - is the point ok to be added?
-            # if so, add line to array of candidates, don't break the check - continue adding lines to that array
-            foundLine = True
-    
-    if foundLine is False:
+        bestLine.AddPoint(point)
+        # INSTEAD - get result from line - is the point ok to be added?
+        # if so, add line to array of candidates, don't break the check - continue adding lines to that array
+    else:   
         # change check to - "is array of fit lines empty"
         line = Line()
-        line.TryToAddPoint(point)
+        line.AddPoint(point)
         lines.append(line)
         #if added here - break
     
