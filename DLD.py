@@ -54,11 +54,14 @@ with open('Dest/out1.txt', 'w') as f:
         plt.plot(x, yValuesAfterPolyfit, '-')
         print("new line, average radius: {0}, biggestYPoint {1}, smallestYPoint {2}".format(line.GetAverageRadius(), line._biggestYPoint, line._smalletYPoint), file=f)
         print(line._points, file=f)
-        # linearLine = Line(x, yValuesAfterPolyfit)
-        dictionary = dict(zip(x, yValuesAfterPolyfit))
-        #print(dictionary)
-        #dic = { x : yValuesAfterPolyfit}
-        # TODO line.FilterPointsAccordingToyValuesAfterPolyfit(new Dic {x : yValuesAfterPolyfit})
+        
+        linearReprLine = Line([Point(xVal,yVal,0) for xVal,yVal in zip(x, yValuesAfterPolyfit)])
+        line.FilterOutFarPoints(linearReprLine)
+        print("yabadaba")
+        (xCoordinatesAfterLinear, yCoordinatesAfterLinear) = line.GetCoordiantes()
+        xAfterLinear = np.asarray(xCoordinatesAfterLinear)
+        yAfterLinear = np.asarray(yCoordinatesAfterLinear)
+        plt.plot(xAfterLinear, yAfterLinear)
 
 ax=plt.gca()
 ax.xaxis.tick_top() 
