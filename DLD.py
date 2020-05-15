@@ -7,30 +7,35 @@ from Models.Line import Line
 from Models.DataExtractor import ExtractPointsByArea
 from Models.IO import GetCommandLineParams
 
+def CreateLinesFromPoints(points):
+    lines = []
+
+    for point in points:
+        validLines = [line for line in lines if line.CanPointBeAdded(point)]
+        lineProximities = {line.GetPointProximityValue(point): line for line in validLines}
+
+        if len(lineProximities) > 0:
+            firstKey = sorted(lineProximities.keys())[0]
+            bestLine = lineProximities[firstKey]
+            bestLine.AddPoint(point)
+        else:   
+            line = Line()
+            line.AddPoint(point)
+            lines.append(line)
+
+    filteredLines = [line for line in lines if line.Size() > 1]
+    return filteredLines
+
 (fileName, minArea, maxArea, deltaXFactor) = GetCommandLineParams()
 
 points = ExtractPointsByArea(fileName, minArea, maxArea)
 points.sort(key=lambda point: point._x)
 deltaX = points[-1]._x - points[0]._x
 
-lines = []
+lines = CreateLinesFromPoints(points)
 
-for point in points:
-    validLines = [line for line in lines if line.CanPointBeAdded(point)]
-    lineProximities = {line.GetPointProximityValue(point): line for line in validLines}
-        
-    if len(lineProximities) > 0:
-        firstKey = sorted(lineProximities.keys())[0]
-        bestLine = lineProximities[firstKey]
-        bestLine.AddPoint(point)
-    else:   
-        line = Line()
-        line.AddPoint(point)
-        lines.append(line)
-    
-filteredLines = [line for line in lines if line.Size() > 1]
 with open('Dest/out1.txt', 'w') as f:
-    for line in filteredLines:
+    for line in lines:
         (xCoordinates, yCoordinates) = line.GetCoordiantes()
         x = np.asarray(xCoordinates)
         y = np.asarray(yCoordinates)
