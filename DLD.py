@@ -26,6 +26,10 @@ def CreateLinesFromPoints(points):
     filteredLines = [line for line in lines if line.Size() > 1]
     return filteredLines
 
+def TryUniteLines(line, lines):
+    # STUB
+    return True
+
 (fileName, minArea, maxArea, deltaXFactor) = GetCommandLineParams()
 
 points = ExtractPointsByArea(fileName, minArea, maxArea)
@@ -33,6 +37,7 @@ points.sort(key=lambda point: point._x)
 deltaX = points[-1]._x - points[0]._x
 
 lines = CreateLinesFromPoints(points)
+lines = [line for line in lines if TryUniteLines(lines, lines)]
 
 with open('Dest/out1.txt', 'w') as f:
     for line in lines:
