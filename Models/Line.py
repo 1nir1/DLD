@@ -8,11 +8,17 @@ def GetDistanceBetweenTwoPoints(point1, point2):
     return distanceBetweenTwoPoints
 
 class Line:
-    def __init__(self):
-        self._points = []
-        self._smalletYPoint = None
-        self._biggestYPoint = None
-        self._lastPointAdded = None
+    def __init__(self, points = None):
+        if points is None:
+            self._points = []
+            self._smalletYPoint = None
+            self._biggestYPoint = None
+            self._lastPointAdded = None
+        else:
+            self._points = points
+            self._smallestYPoint = min(points, key=lambda point: point._y)
+            self._biggestYPoint = max(points, key=lambda point: point._y)
+            self._lastPointAdded = max(points, key=lambda point: point._x)
 
     def AddPoint(self, point):
         self._points.append(point)
@@ -27,6 +33,23 @@ class Line:
             
         if point._y - point._radius < self._smalletYPoint._y - self._smalletYPoint._radius:
             self._smalletYPoint = point
+
+    def RemovePoint(self, point):
+        self._points.remove(point)
+
+        if len(self._points) == 0:
+            self._smalletYPoint = None
+            self._biggestYPoint = None
+            self._lastPointAdded = None
+        else:
+            if self._biggestYPoint == point:
+                self._biggestYPoint = max(self._points, key=lambda point: point._y)
+
+            if self._smalletYPoint == point:
+                self._smallestYPoint = min(self._points, key=lambda point: point._y)
+
+            if self._lastPointAdded == point:
+                self._lastPointAdded = max(self._points, key=lambda point: point._x)
 
     def CanPointBeAdded(self, point):
         if len(self._points) == 0:
@@ -51,12 +74,16 @@ class Line:
         return (outputX, outputY)
 
     def GetAverageRadius(self):
-        radiusValues = (point._radius for point in self._points)
-        return statistics.median(radiusValues)
+        radiusValues = [point._radius for point in self._points]
+        averageRadius = statistics.median(radiusValues)
+        roundedAverageRadius = round(averageRadius, 4)
+        return roundedAverageRadius
 
     def Size(self):
         return len(self._points)
-    # def FilterPointsAccordingToyValuesAfterPolyfit(self, yValuesAfterPolyfit):
-    #     averageRadius = self.GetAverageRadius()
-    #     for point in self._points:
-    #         if point._y < 
+    
+    def FilterOutFarPoints(self, comparedLine):
+        averageRadius = self.GetAverageRadius()
+        for myPoint, comparedLinePoint in zip(self._points, comparedLine._points):
+            if GetDistanceBetweenTwoPoints(myPoint, comparedLinePoint) > averageRadius:
+                self.RemovePoint(myPoint)
