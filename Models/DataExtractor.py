@@ -1,10 +1,10 @@
 import csv
 from Models.Point import Point
 
-def ExtractPointsByArea(file, minArea, maxArea):
+def ExtractPointsByArea(fileName, minArea, maxArea):
     points = []
 
-    with open(file , newline='') as csvfile:
+    with open(fileName , newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             area = row['Area']
