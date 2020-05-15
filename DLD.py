@@ -29,7 +29,7 @@ for point in points:
         lines.append(line)
     
 filteredLines = [line for line in lines if line.Size() > 1]
-with open('out.txt', 'w') as f:
+with open('Dest/out1.txt', 'w') as f:
     for line in filteredLines:
         (xCoordinates, yCoordinates) = line.GetCoordiantes()
         x = np.asarray(xCoordinates)

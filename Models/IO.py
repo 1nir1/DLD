@@ -9,7 +9,7 @@ def GetCommandLineParams():
     args=parser.parse_args()
 
     fileName = args.fileName
-    fileName = fileName[0].replace("'","")
+    fileName = "Source/" + fileName[0].replace("'","")
     minArea = args.minArea
     maxArea = args.maxArea
     deltaXFactor = args.deltaXFactor
