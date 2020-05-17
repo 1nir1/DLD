@@ -13,20 +13,23 @@ class Line:
             self._points = []
             self._smalletYPoint = None
             self._biggestYPoint = None
-            self._lastPointAdded = None
+            self._smallestXPoint = None
+            self._biggestXPoint = None
         else:
             self._points = points
             self._smallestYPoint = min(points, key=lambda point: point._y)
             self._biggestYPoint = max(points, key=lambda point: point._y)
-            self._lastPointAdded = max(points, key=lambda point: point._x)
+            self._smallestXPoint = min(points, key=lambda point: point._x)
+            self._biggestXPoint = max(points, key=lambda point: point._x)
 
     def AddPoint(self, point):
         self._points.append(point)
-        self._lastPointAdded = point
+        self._biggestXPoint = point
 
         if len(self._points) == 1:
-            self._biggestYPoint = point
             self._smalletYPoint = point
+            self._biggestYPoint = point
+            self._smallestXPoint = point
             
         if point._y + point._radius > self._biggestYPoint._y + self._biggestYPoint._radius:
             self._biggestYPoint = point
@@ -40,16 +43,20 @@ class Line:
         if len(self._points) == 0:
             self._smalletYPoint = None
             self._biggestYPoint = None
-            self._lastPointAdded = None
+            self._smallestXPoint = None
+            self._biggestXPoint = None
         else:
-            if self._biggestYPoint == point:
-                self._biggestYPoint = max(self._points, key=lambda point: point._y)
-
             if self._smalletYPoint == point:
                 self._smallestYPoint = min(self._points, key=lambda point: point._y)
 
-            if self._lastPointAdded == point:
-                self._lastPointAdded = max(self._points, key=lambda point: point._x)
+            if self._biggestYPoint == point:
+                self._biggestYPoint = max(self._points, key=lambda point: point._y)
+
+            if self._smallestXPoint == point:
+                self._smallestXPoint = min(self._points, key=lambda point: point._x)
+
+            if self._biggestXPoint == point:
+                self._biggestXPoint = max(self._points, key=lambda point: point._x)
 
     def CanPointBeAdded(self, point):
         if len(self._points) == 0:
@@ -63,7 +70,7 @@ class Line:
     def GetPointProximityValue(self, point):
         #distanceFromBiggestYPoint = GetDistanceBetweenTwoPoints(point, self._biggestYPoint)
         #distanceFromSmallestYPoint = GetDistanceBetweenTwoPoints(point, self._smalletYPoint)
-        proximityValue = GetDistanceBetweenTwoPoints(point, self._lastPointAdded) #min(distanceFromBiggestYPoint, distanceFromSmallestYPoint)
+        proximityValue = GetDistanceBetweenTwoPoints(point, self._biggestXPoint) #min(distanceFromBiggestYPoint, distanceFromSmallestYPoint)
         roundedProximityValue = round(proximityValue, 4)
         return roundedProximityValue
     
