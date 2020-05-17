@@ -7,6 +7,13 @@ from Models.Line import Line
 from Models.DataExtractor import ExtractPointsByArea
 from Models.IO import GetCommandLineParams
 
+def MovingWindow(n, iterable):
+  start, stop = 0, n
+  while stop <= len(iterable):
+      yield iterable[start:stop]
+      start += 1
+      stop += 1
+
 def CreateLinesFromPoints(points):
     lines = []
 
@@ -26,17 +33,31 @@ def CreateLinesFromPoints(points):
     filteredLines = [line for line in lines if line.Size() > 1]
     return filteredLines
 
-def TryUniteLines(line, lines):
-    # STUB
-    return True
-
+# get array of fileNames instead of fileName
 (fileName, minArea, maxArea, deltaXFactor) = GetCommandLineParams()
 
+# then run this code under: "for fileName in fileNames:"
 points = ExtractPointsByArea(fileName, minArea, maxArea)
 points.sort(key=lambda point: point._x)
 deltaX = points[-1]._x - points[0]._x
 
 lines = CreateLinesFromPoints(points)
+
+wereLinesMerged = True
+while wereLinesMerged:
+    linesAfterMerge = []
+    lines.sort(key=lambda line: line.GetAverageYPoint())
+    wereLinesMerged = False
+    for coupleOflines in MovingWindow(2, lines):
+        if Line.CanLinesBeMerged(coupleOflines[0], coupleOflines[1]):
+            linesAfterMerge.append(coupleOflines[0] + coupleOflines[1])
+            lines.remove(coupleOflines[0])
+            lines.remove(coupleOflines[1])
+            wereLinesMerged = True
+    lines = lines + linesAfterMerge
+
+#mergedLines = [coupleOflines[0] + coupleOflines[1] if Line.CanLinesBeMerged(coupleOflines[0], coupleOflines[1]) else coupleOflines[0] for coupleOflines in MovingWindow(2, lines)]
+#lines = mergedLines
 lines = [line for line in lines if TryUniteLines(lines, lines)]
 
 with open('Dest/out1.txt', 'w') as f:
