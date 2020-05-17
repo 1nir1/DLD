@@ -58,7 +58,6 @@ while wereLinesMerged:
 
 #mergedLines = [coupleOflines[0] + coupleOflines[1] if Line.CanLinesBeMerged(coupleOflines[0], coupleOflines[1]) else coupleOflines[0] for coupleOflines in MovingWindow(2, lines)]
 #lines = mergedLines
-lines = [line for line in lines if TryUniteLines(lines, lines)]
 
 with open('Dest/out1.txt', 'w') as f:
     for line in lines:
