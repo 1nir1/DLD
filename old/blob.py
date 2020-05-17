@@ -20,24 +20,24 @@ class Point:
 class Line:
     def __init__(self):
         self._points = []
-        self._smalletYPoint = None
+        self._smallestYPoint = None
         self._biggestYPoint = None
 
     def TryToAddPoint(self, point):
         if len(self._points) == 0:
             self._points.append(point)
             self._biggestYPoint = point
-            self._smalletYPoint = point
+            self._smallestYPoint = point
             return True
         
-        if point._y - point._radius <= self._biggestYPoint._y + self._biggestYPoint._radius and point._y + point._radius >= self._smalletYPoint._y - self._smalletYPoint._radius:
+        if point._y - point._radius <= self._biggestYPoint._y + self._biggestYPoint._radius and point._y + point._radius >= self._smallestYPoint._y - self._smallestYPoint._radius:
             self._points.append(point)
             
             if point._y + point._radius > self._biggestYPoint._y + self._biggestYPoint._radius:
                 self._biggestYPoint = point
             
-            if point._y - point._radius < self._smalletYPoint._y - self._smalletYPoint._radius:
-                self._smalletYPoint = point
+            if point._y - point._radius < self._smallestYPoint._y - self._smallestYPoint._radius:
+                self._smallestYPoint = point
             
             return True
         
