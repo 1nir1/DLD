@@ -14,6 +14,23 @@ def MovingWindow(n, iterable):
       start += 1
       stop += 1
 
+def MergeCloseLines(lines):
+    wereLinesMerged = True
+    while wereLinesMerged:
+        linesAfterMerge = []
+        # we sort by the average y point, becuase it is a "blocking-factor" if line1 and line3 have line2 btw them, they cannot be merged!
+        lines.sort(key=lambda line: line.GetAverageYPoint())
+        wereLinesMerged = False
+        for coupleOflines in MovingWindow(2, lines):
+            if Line.CanLinesBeMerged(coupleOflines[0], coupleOflines[1]):
+                linesAfterMerge.append(coupleOflines[0] + coupleOflines[1])
+                lines.remove(coupleOflines[0])
+                lines.remove(coupleOflines[1])
+                wereLinesMerged = True
+        lines = lines + linesAfterMerge
+    
+    return lines
+
 def CreateLinesFromPoints(points):
     lines = []
 
@@ -42,22 +59,7 @@ points.sort(key=lambda point: point._x)
 deltaX = points[-1]._x - points[0]._x
 
 lines = CreateLinesFromPoints(points)
-
-wereLinesMerged = True
-while wereLinesMerged:
-    linesAfterMerge = []
-    lines.sort(key=lambda line: line.GetAverageYPoint())
-    wereLinesMerged = False
-    for coupleOflines in MovingWindow(2, lines):
-        if Line.CanLinesBeMerged(coupleOflines[0], coupleOflines[1]):
-            linesAfterMerge.append(coupleOflines[0] + coupleOflines[1])
-            lines.remove(coupleOflines[0])
-            lines.remove(coupleOflines[1])
-            wereLinesMerged = True
-    lines = lines + linesAfterMerge
-
-#mergedLines = [coupleOflines[0] + coupleOflines[1] if Line.CanLinesBeMerged(coupleOflines[0], coupleOflines[1]) else coupleOflines[0] for coupleOflines in MovingWindow(2, lines)]
-#lines = mergedLines
+lines = MergeCloseLines(lines)
 
 with open('Dest/out1.txt', 'w') as f:
     for line in lines:
@@ -72,12 +74,11 @@ with open('Dest/out1.txt', 'w') as f:
 
         plt.plot(x, y)
         plt.plot(x, yValuesAfterPolyfit, '-')
-        print("new line, average radius: {0}, biggestYPoint {1}, smallestYPoint {2}".format(line.GetAverageRadius(), line._biggestYPoint, line._smalletYPoint), file=f)
+        print("new line, averageYPoint: {0}, average radius: {1}, biggestYPoint {2}, smallestYPoint {3}".format(line.GetAverageYPoint(), line.GetAverageRadius(), line._biggestYPoint, line._smallestYPoint), file=f)
         print(line._points, file=f)
         
         linearReprLine = Line([Point(xVal,yVal,0) for xVal,yVal in zip(x, yValuesAfterPolyfit)])
         line.FilterOutFarPoints(linearReprLine)
-        print("yabadaba")
         (xCoordinatesAfterLinear, yCoordinatesAfterLinear) = line.GetCoordiantes()
         xAfterLinear = np.asarray(xCoordinatesAfterLinear)
         yAfterLinear = np.asarray(yCoordinatesAfterLinear)

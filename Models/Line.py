@@ -110,7 +110,6 @@ class Line:
     
     @staticmethod
     def CanLinesBeMerged(line1, line2):
-        #return False
         if line1._smallestXPoint._x > line2._biggestXPoint._x or line2._smallestXPoint._x > line1._biggestXPoint._x:
             
             firstLineAverageRadius = line1.GetAverageRadius()
@@ -121,11 +120,9 @@ class Line:
 
             if firstLineAverageY > secondLineAverageY:
                 if firstLineAverageY - firstLineAverageRadius*10 < secondLineAverageY + secondLineAverageRadius*10:
-                    print("merged1")
                     return True
             else:
                 if firstLineAverageY + firstLineAverageRadius*10 > secondLineAverageY - secondLineAverageRadius*10:
-                    print("merged2")
                     return True
 
         return False
