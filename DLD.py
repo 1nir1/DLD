@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
-import numpy as np
-from numpy.polynomial.polynomial import polyfit
-from math import hypot
+
 from Models.Point import Point
 from Models.Line import Line
 from Models.DataExtractor import ExtractPointsByArea
@@ -63,28 +61,26 @@ lines = MergeCloseLines(lines)
 
 with open('Dest/out1.txt', 'w') as f:
     for line in lines:
-        (xCoordinates, yCoordinates) = line.GetCoordiantes()
-        x = np.asarray(xCoordinates)
-        y = np.asarray(yCoordinates)
-        b, m = polyfit(x, y, 1)
-        yValuesAfterPolyfit = b + m * x
-        lineLength = hypot(x[-1] - x[0], yValuesAfterPolyfit[-1] - yValuesAfterPolyfit[0])
+        linearReprLine = line.GetLinearReprLine()
+        lineLength = linearReprLine.GetLineLength()
+        
         if lineLength < deltaXFactor * deltaX:
             continue
-
-        plt.plot(x, y)
-        plt.plot(x, yValuesAfterPolyfit, '-')
+        
+        (x, y) = line.GetCoordiantes()
+        plt.plot(x,y)
+        (linearX, linearY) = linearReprLine.GetCoordiantes()
+        plt.plot(linearX, linearY, '-')
+        
         print("new line, averageYPoint: {0}, average radius: {1}, biggestYPoint {2}, smallestYPoint {3}".format(line.GetAverageYPoint(), line.GetAverageRadius(), line._biggestYPoint, line._smallestYPoint), file=f)
         print(line._points, file=f)
         
-        linearReprLine = Line([Point(xVal,yVal,0) for xVal,yVal in zip(x, yValuesAfterPolyfit)])
         line.FilterOutFarPoints(linearReprLine)
-        (xCoordinatesAfterLinear, yCoordinatesAfterLinear) = line.GetCoordiantes()
-        xAfterLinear = np.asarray(xCoordinatesAfterLinear)
-        yAfterLinear = np.asarray(yCoordinatesAfterLinear)
-        plt.plot(xAfterLinear, yAfterLinear)
+
+        (xAfterFilteringFarPoints, yAfterFilteringFarPoints) = line.GetCoordiantes()
+        plt.plot(xAfterFilteringFarPoints, yAfterFilteringFarPoints)
 
 ax=plt.gca()
 ax.xaxis.tick_top() 
 ax.invert_yaxis()
-plt.show() 
+plt.savefig('foo.png')

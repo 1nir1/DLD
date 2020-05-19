@@ -1,5 +1,10 @@
 import statistics
+import numpy as np
+
+from Models.Point import Point
 from math import sqrt
+from numpy.polynomial.polynomial import polyfit
+from math import hypot
 
 def _getDistanceBetweenTwoPoints(point1, point2):
     # TODO - check algo
@@ -86,10 +91,13 @@ class Line:
         return roundedProximityValue
     
     def GetCoordiantes(self):
-        outputX = [point._x for point in self._points]
-        outputY = [point._y for point in self._points]
+        xCoordinates = [point._x for point in self._points]
+        yCoordinates = [point._y for point in self._points]
+        
+        x = np.asarray(xCoordinates)
+        y = np.asarray(yCoordinates)
 
-        return (outputX, outputY)
+        return x, y
 
     def GetAverageRadius(self):
         radiusValues = [point._radius for point in self._points]
@@ -108,6 +116,18 @@ class Line:
             if _getDistanceBetweenTwoPoints(myPoint, comparedLinePoint) > averageRadius:
                 self.RemovePoint(myPoint)
     
+    def GetLinearReprLine(self):
+        (x, y) = self.GetCoordiantes()
+        b, m = polyfit(x, y, 1)
+        yValuesAfterPolyfit = b + m * x
+
+        linearReprLine = Line([Point(xVal,yVal,0) for xVal,yVal in zip(x, yValuesAfterPolyfit)])
+        return linearReprLine
+
+    def GetLineLength(self):
+        lineLength = hypot(self._biggestXPoint._x - self._smallestXPoint._x, self._biggestYPoint._y - self._smallestYPoint._y)
+        return lineLength
+
     @staticmethod
     def CanLinesBeMerged(line1, line2):
         if line1._smallestXPoint._x > line2._biggestXPoint._x or line2._smallestXPoint._x > line1._biggestXPoint._x:
