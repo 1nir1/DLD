@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 
 from Models.Point import Point
@@ -48,39 +49,43 @@ def CreateLinesFromPoints(points):
     filteredLines = [line for line in lines if line.Size() > 1]
     return filteredLines
 
-# get array of fileNames instead of fileName
-(fileName, minArea, maxArea, deltaXFactor) = GetCommandLineParams()
+(fileNames, minArea, maxArea, deltaXFactor) = GetCommandLineParams()
+for fileName in fileNames:
+    baseFileName = os.path.splitext(fileName)[0]
 
-# then run this code under: "for fileName in fileNames:"
-points = ExtractPointsByArea(fileName, minArea, maxArea)
-points.sort(key=lambda point: point._x)
-deltaX = points[-1]._x - points[0]._x
+    points = ExtractPointsByArea("Source/{0}".format(fileName), minArea, maxArea)
+    points.sort(key=lambda point: point._x)
+    deltaX = points[-1]._x - points[0]._x
 
-lines = CreateLinesFromPoints(points)
-lines = MergeCloseLines(lines)
+    lines = CreateLinesFromPoints(points)
+    lines = MergeCloseLines(lines)
 
-with open('Dest/out1.txt', 'w') as f:
-    for line in lines:
-        linearReprLine = line.GetLinearReprLine()
-        lineLength = linearReprLine.GetLineLength()
-        
-        if lineLength < deltaXFactor * deltaX:
-            continue
-        
-        (x, y) = line.GetCoordiantes()
-        plt.plot(x,y)
-        (linearX, linearY) = linearReprLine.GetCoordiantes()
-        plt.plot(linearX, linearY, '-')
-        
-        print("new line, averageYPoint: {0}, average radius: {1}, biggestYPoint {2}, smallestYPoint {3}".format(line.GetAverageYPoint(), line.GetAverageRadius(), line._biggestYPoint, line._smallestYPoint), file=f)
-        print(line._points, file=f)
-        
-        line.FilterOutFarPoints(linearReprLine)
+    with open('Dest/{0}.txt'.format(baseFileName), 'w') as f:
+        for line in lines:
+            linearReprLine = line.GetLinearReprLine()
+            lineLength = linearReprLine.GetLineLength()
+            
+            if lineLength < deltaXFactor * deltaX:
+                continue
+            
+            (x, y) = line.GetCoordiantes()
+            plt.plot(x,y)
+            (linearX, linearY) = linearReprLine.GetCoordiantes()
+            plt.plot(linearX, linearY, '-')
+            
+            print("new line, averageYPoint: {0}, average radius: {1}, biggestYPoint {2}, smallestYPoint {3}".format(line.GetAverageYPoint(), line.GetAverageRadius(), line._biggestYPoint, line._smallestYPoint), file=f)
+            print(line._points, file=f)
+            
+            line.FilterOutFarPoints(linearReprLine)
 
-        (xAfterFilteringFarPoints, yAfterFilteringFarPoints) = line.GetCoordiantes()
-        plt.plot(xAfterFilteringFarPoints, yAfterFilteringFarPoints)
+            (xAfterFilteringFarPoints, yAfterFilteringFarPoints) = line.GetCoordiantes()
+            plt.plot(xAfterFilteringFarPoints, yAfterFilteringFarPoints)
 
-ax=plt.gca()
-ax.xaxis.tick_top() 
-ax.invert_yaxis()
-plt.savefig('foo.png')
+    ax=plt.gca()
+    ax.xaxis.tick_top() 
+    ax.invert_yaxis()
+    plt.savefig('Dest/{0}.png'.format(baseFileName))
+    plt.clf()
+    plt.cla()
+    plt.close()
+    #plt.show()

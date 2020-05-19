@@ -1,4 +1,6 @@
 import argparse
+from os import listdir
+from os.path import isfile, join
 
 def GetCommandLineParams():
     parser=argparse.ArgumentParser(description='DewettingLineDetector')
@@ -8,10 +10,12 @@ def GetCommandLineParams():
     parser.add_argument('--deltaXFactor', type=float, default=0.7, help='Factor to multiply the deltaX of the sample with - lines below that deltaX * factor length, will be filtered out')
     args=parser.parse_args()
 
-    fileName = args.fileName
-    fileName = "Source/" + fileName[0].replace("'","")
+    fileNames = args.fileName
+    if fileNames is None:
+        fileNames = [f for f in listdir('Source') if isfile(join('Source', f))]
+    fileNames[:] = [ fileName.replace("'","") for fileName in fileNames ]
     minArea = args.minArea
     maxArea = args.maxArea
     deltaXFactor = args.deltaXFactor
 
-    return (fileName, minArea, maxArea, deltaXFactor)
+    return (fileNames, minArea, maxArea, deltaXFactor)
