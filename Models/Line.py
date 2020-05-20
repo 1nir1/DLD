@@ -112,8 +112,11 @@ class Line:
     
     def FilterOutFarPoints(self, comparedLine):
         averageRadius = self.GetAverageRadius()
-        for myPoint, comparedLinePoint in zip(self._points, comparedLine._points):
-            if _getDistanceBetweenTwoPoints(myPoint, comparedLinePoint) > averageRadius:
+        myPoints = self._points.copy()
+        for myPoint, comparedLinePoint in zip(myPoints, comparedLine._points):
+            distance = _getDistanceBetweenTwoPoints(myPoint, comparedLinePoint)
+            if  distance > averageRadius:
+                #print("removed {0} because distance was {1} and averageRadius is {2} myPoint {3} otherPoint {4}".format(myPoint, distance, averageRadius, myPoint, comparedLinePoint))
                 self.RemovePoint(myPoint)
     
     def GetLinearReprLine(self):

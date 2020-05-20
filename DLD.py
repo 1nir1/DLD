@@ -60,8 +60,8 @@ for fileName in fileNames:
     lines = CreateLinesFromPoints(points)
     lines = MergeCloseLines(lines)
 
-    with open('Dest/{0}.txt'.format(baseFileName), 'w') as f:
-        for line in lines:
+    with open("Dest/{0}.txt".format(baseFileName), 'w') as f:
+        for index,line in enumerate(lines):
             linearReprLine = line.GetLinearReprLine()
             lineLength = linearReprLine.GetLineLength()
             
@@ -69,22 +69,32 @@ for fileName in fileNames:
                 continue
             
             (x, y) = line.GetCoordiantes()
-            plt.plot(x,y)
+            plt.plot(x,y, label="{0} raw".format(index))
             (linearX, linearY) = linearReprLine.GetCoordiantes()
-            plt.plot(linearX, linearY, '-')
+            plt.plot(linearX, linearY, '-', label="{0} linear".format(index))
             
-            print("new line, averageYPoint: {0}, average radius: {1}, biggestYPoint {2}, smallestYPoint {3}".format(line.GetAverageYPoint(), line.GetAverageRadius(), line._biggestYPoint, line._smallestYPoint), file=f)
+            print("raw line index:{0}, averageYPoint: {1}, average radius: {2}, biggestYPoint {3}, smallestYPoint {4}".format(index, line.GetAverageYPoint(), line.GetAverageRadius(), line._biggestYPoint, line._smallestYPoint), file=f)
             print(line._points, file=f)
+            print("linear line index:{0}, averageYPoint: {1}, average radius: {2}, biggestYPoint {3}, smallestYPoint {4}".format(index, linearReprLine.GetAverageYPoint(), linearReprLine.GetAverageRadius(), linearReprLine._biggestYPoint, linearReprLine._smallestYPoint), file=f)
+            print(linearReprLine._points, file=f)
             
             line.FilterOutFarPoints(linearReprLine)
-
+            print("afterFilteartion line index:{0}, averageYPoint: {1}, average radius: {2}, biggestYPoint {3}, smallestYPoint {4}".format(index, line.GetAverageYPoint(), line.GetAverageRadius(), line._biggestYPoint, line._smallestYPoint), file=f)
+            print(line._points, file=f)
             (xAfterFilteringFarPoints, yAfterFilteringFarPoints) = line.GetCoordiantes()
-            plt.plot(xAfterFilteringFarPoints, yAfterFilteringFarPoints)
+            plt.plot(xAfterFilteringFarPoints, yAfterFilteringFarPoints, label="{0} after filteration".format(index))
 
     ax=plt.gca()
     ax.xaxis.tick_top() 
     ax.invert_yaxis()
-    plt.savefig('Dest/{0}.png'.format(baseFileName))
+    # Shrink current axis by 20%
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+    # Put a legend to the right of the current axis
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})
+
+    plt.savefig('Dest/{0}.pdf'.format(baseFileName))
     plt.clf()
     plt.cla()
     plt.close()
