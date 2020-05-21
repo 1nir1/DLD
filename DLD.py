@@ -5,6 +5,7 @@ from Models.Point import Point
 from Models.Line import Line
 from Models.DataExtractor import ExtractPointsByArea
 from Models.IO import GetCommandLineParams
+from pathlib import Path
 
 def MovingWindow(n, iterable):
   start, stop = 0, n
@@ -60,7 +61,10 @@ for fileName in fileNames:
     lines = CreateLinesFromPoints(points)
     lines = MergeCloseLines(lines)
 
-    with open("Dest/{0}.txt".format(baseFileName), 'w') as f:
+    destPath = "Dest/{0}".format(baseFileName)
+    Path(destPath).mkdir(parents=True, exist_ok=True)
+
+    with open("{0}/{1}.txt".format(destPath, baseFileName), 'w') as f:
         for index,line in enumerate(lines):
             linearReprLine = line.GetLinearReprLine()
             lineLength = linearReprLine.GetLineLength()
@@ -95,7 +99,7 @@ for fileName in fileNames:
     # Put a legend to the right of the current axis
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})
 
-    plt.savefig('Dest/{0}.pdf'.format(baseFileName))
+    plt.savefig("{0}/{1}.pdf".format(destPath, baseFileName))
     plt.clf()
     plt.cla()
     plt.close()
