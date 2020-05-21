@@ -73,14 +73,15 @@ for fileName in fileNames:
             (linearX, linearY) = linearReprLine.GetCoordiantes()
             plt.plot(linearX, linearY, '-', label="{0} linear".format(index))
             
-            print("raw line index:{0}, averageYPoint: {1}, average radius: {2}, biggestYPoint {3}, smallestYPoint {4}".format(index, line.GetAverageYPoint(), line.GetAverageRadius(), line._biggestYPoint, line._smallestYPoint), file=f)
-            print(line._points, file=f)
-            print("linear line index:{0}, averageYPoint: {1}, average radius: {2}, biggestYPoint {3}, smallestYPoint {4}".format(index, linearReprLine.GetAverageYPoint(), linearReprLine.GetAverageRadius(), linearReprLine._biggestYPoint, linearReprLine._smallestYPoint), file=f)
-            print(linearReprLine._points, file=f)
+            print("raw line index:{0}, averageYPoint: {1}, average radius: {2}, biggestYPoint {3}, smallestYPoint {4}".format(index, line.GetAverageYPoint(), line.GetAverageRadius(), line.biggestYPoint, line.smallestYPoint), file=f)
+            print(line.points, file=f)
+            print("linear line index:{0}, averageYPoint: {1}, average radius: {2}, biggestYPoint {3}, smallestYPoint {4}".format(index, linearReprLine.GetAverageYPoint(), linearReprLine.GetAverageRadius(), linearReprLine.biggestYPoint, linearReprLine.smallestYPoint), file=f)
+            print(linearReprLine.points, file=f)
             
             line.FilterOutFarPoints(linearReprLine)
-            print("afterFilteartion line index:{0}, averageYPoint: {1}, average radius: {2}, biggestYPoint {3}, smallestYPoint {4}".format(index, line.GetAverageYPoint(), line.GetAverageRadius(), line._biggestYPoint, line._smallestYPoint), file=f)
-            print(line._points, file=f)
+            print("afterFilteartion line index:{0}, averageYPoint: {1}, average radius: {2}, biggestYPoint {3}, smallestYPoint {4}".format(index, line.GetAverageYPoint(), line.GetAverageRadius(), line.biggestYPoint, line.smallestYPoint), file=f)
+            print(line.points, file=f)
+            
             (xAfterFilteringFarPoints, yAfterFilteringFarPoints) = line.GetCoordiantes()
             plt.plot(xAfterFilteringFarPoints, yAfterFilteringFarPoints, label="{0} after filteration".format(index))
 

@@ -38,6 +38,26 @@ class Line:
         allPoints.sort(key=lambda point: point.x)
         return Line(allPoints)
 
+    @property
+    def points(self):
+        return self._points
+
+    @property    
+    def smallestYPoint(self):
+        return self._smallestYPoint
+
+    @property
+    def biggestYPoint(self):
+        return self._biggestYPoint
+
+    @property
+    def smallestXPoint(self):
+        return self._smallestXPoint
+
+    @property
+    def biggestXPoint(self):
+        return self._biggestXPoint        
+
     def AddPoint(self, point):
         self._points.append(point)
         self._biggestXPoint = point
