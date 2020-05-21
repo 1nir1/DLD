@@ -9,7 +9,7 @@ from math import hypot
 def _getDistanceBetweenTwoPoints(point1, point2):
     # TODO - check algo
     # sqrt((x2 − x1)^2 + (y2 − y1)^2) − (r2 + r1)
-    distanceBetweenTwoPoints = sqrt(pow((point1._x - point2._x), 2)+ pow((point1._y - point2._y ), 2)) - (point1._radius + point2._radius)
+    distanceBetweenTwoPoints = sqrt(pow((point1.x - point2.x), 2)+ pow((point1.y - point2.y ), 2)) - (point1.radius + point2.radius)
     return distanceBetweenTwoPoints
 
 def _getAverage(values):
@@ -28,14 +28,14 @@ class Line:
             self._biggestXPoint = None
         else:
             self._points = points
-            self._smallestYPoint = min(points, key=lambda point: point._y)
-            self._biggestYPoint = max(points, key=lambda point: point._y)
-            self._smallestXPoint = min(points, key=lambda point: point._x)
-            self._biggestXPoint = max(points, key=lambda point: point._x)
+            self._smallestYPoint = min(points, key=lambda point: point.y)
+            self._biggestYPoint = max(points, key=lambda point: point.y)
+            self._smallestXPoint = min(points, key=lambda point: point.x)
+            self._biggestXPoint = max(points, key=lambda point: point.x)
 
     def __add__(self, otherLine):
         allPoints = self._points + otherLine._points
-        allPoints.sort(key=lambda point: point._x)
+        allPoints.sort(key=lambda point: point.x)
         return Line(allPoints)
 
     def AddPoint(self, point):
@@ -47,10 +47,10 @@ class Line:
             self._biggestYPoint = point
             self._smallestXPoint = point
             
-        if point._y + point._radius > self._biggestYPoint._y + self._biggestYPoint._radius:
+        if point.y + point.radius > self._biggestYPoint.y + self._biggestYPoint.radius:
             self._biggestYPoint = point
             
-        if point._y - point._radius < self._smallestYPoint._y - self._smallestYPoint._radius:
+        if point.y - point.radius < self._smallestYPoint.y - self._smallestYPoint.radius:
             self._smallestYPoint = point
 
     def RemovePoint(self, point):
@@ -63,36 +63,34 @@ class Line:
             self._biggestXPoint = None
         else:
             if self._smallestYPoint == point:
-                self._smallestYPoint = min(self._points, key=lambda point: point._y)
+                self._smallestYPoint = min(self._points, key=lambda point: point.y)
 
             if self._biggestYPoint == point:
-                self._biggestYPoint = max(self._points, key=lambda point: point._y)
+                self._biggestYPoint = max(self._points, key=lambda point: point.y)
 
             if self._smallestXPoint == point:
-                self._smallestXPoint = min(self._points, key=lambda point: point._x)
+                self._smallestXPoint = min(self._points, key=lambda point: point.x)
 
             if self._biggestXPoint == point:
-                self._biggestXPoint = max(self._points, key=lambda point: point._x)
+                self._biggestXPoint = max(self._points, key=lambda point: point.x)
 
     def CanPointBeAdded(self, point):
         if len(self._points) == 0:
             return True
         
-        if point._y - point._radius <= self._biggestYPoint._y + self._biggestYPoint._radius and point._y + point._radius >= self._smallestYPoint._y - self._smallestYPoint._radius:
+        if point.y - point.radius <= self._biggestYPoint.y + self._biggestYPoint.radius and point.y + point.radius >= self._smallestYPoint.y - self._smallestYPoint.radius:
             return True
         
         return False
 
     def GetPointProximityValue(self, point):
-        #distanceFromBiggestYPoint = GetDistanceBetweenTwoPoints(point, self._biggestYPoint)
-        #distanceFromSmallestYPoint = GetDistanceBetweenTwoPoints(point, self._smallestYPoint)
-        proximityValue = _getDistanceBetweenTwoPoints(point, self._biggestXPoint) #min(distanceFromBiggestYPoint, distanceFromSmallestYPoint)
+        proximityValue = _getDistanceBetweenTwoPoints(point, self._biggestXPoint)
         roundedProximityValue = round(proximityValue, 4)
         return roundedProximityValue
     
     def GetCoordiantes(self):
-        xCoordinates = [point._x for point in self._points]
-        yCoordinates = [point._y for point in self._points]
+        xCoordinates = [point.x for point in self._points]
+        yCoordinates = [point.y for point in self._points]
         
         x = np.asarray(xCoordinates)
         y = np.asarray(yCoordinates)
@@ -100,11 +98,11 @@ class Line:
         return x, y
 
     def GetAverageRadius(self):
-        radiusValues = [point._radius for point in self._points]
+        radiusValues = [point.radius for point in self._points]
         return _getAverage(radiusValues)
 
     def GetAverageYPoint(self):
-        yValues = [point._y for point in self._points]
+        yValues = [point.y for point in self._points]
         return _getAverage(yValues)
 
     def Size(self):
@@ -128,12 +126,12 @@ class Line:
         return linearReprLine
 
     def GetLineLength(self):
-        lineLength = hypot(self._biggestXPoint._x - self._smallestXPoint._x, self._biggestYPoint._y - self._smallestYPoint._y)
+        lineLength = hypot(self._biggestXPoint.x - self._smallestXPoint.x, self._biggestYPoint.y - self._smallestYPoint.y)
         return lineLength
 
     @staticmethod
     def CanLinesBeMerged(line1, line2):
-        if line1._smallestXPoint._x > line2._biggestXPoint._x or line2._smallestXPoint._x > line1._biggestXPoint._x:
+        if line1._smallestXPoint.x > line2._biggestXPoint.x or line2._smallestXPoint.x > line1._biggestXPoint.x:
             
             firstLineAverageRadius = line1.GetAverageRadius()
             firstLineAverageY = line1.GetAverageYPoint()

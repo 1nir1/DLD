@@ -54,8 +54,8 @@ for fileName in fileNames:
     baseFileName = os.path.splitext(fileName)[0]
 
     points = ExtractPointsByArea("Source/{0}".format(fileName), minArea, maxArea)
-    points.sort(key=lambda point: point._x)
-    deltaX = points[-1]._x - points[0]._x
+    points.sort(key=lambda point: point.x)
+    deltaX = points[-1].x - points[0].x
 
     lines = CreateLinesFromPoints(points)
     lines = MergeCloseLines(lines)
