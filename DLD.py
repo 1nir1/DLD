@@ -1,11 +1,19 @@
 import os
 import matplotlib.pyplot as plt
+import itertools
 
 from Models.Point import Point
 from Models.Line import Line
 from Models.DataExtractor import ExtractPointsByArea
 from Models.IO import GetCommandLineParams
 from pathlib import Path
+
+def UniqueFile(basename, ext):
+    actualname = "%s.%s" % (basename, ext)
+    c = itertools.count()
+    while os.path.exists(actualname):
+        actualname = "%s (%d).%s" % (basename, next(c), ext)
+    return actualname
 
 def MovingWindow(n, iterable):
   start, stop = 0, n
@@ -63,8 +71,9 @@ for fileName in fileNames:
 
     destPath = "Dest/{0}".format(baseFileName)
     Path(destPath).mkdir(parents=True, exist_ok=True)
+    baseName = "{0}/{1}".format(destPath, baseFileName)
 
-    with open("{0}/{1}.txt".format(destPath, baseFileName), 'w') as f:
+    with open(UniqueFile(baseName,"txt"), 'w') as f:
         for index,line in enumerate(lines):
             linearReprLine = line.GetLinearReprLine()
             lineLength = linearReprLine.GetLineLength()
@@ -99,7 +108,7 @@ for fileName in fileNames:
     # Put a legend to the right of the current axis
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})
 
-    plt.savefig("{0}/{1}.pdf".format(destPath, baseFileName))
+    plt.savefig(UniqueFile(baseName, "pdf"))
     plt.clf()
     plt.cla()
     plt.close()
