@@ -82,6 +82,12 @@ def _configureAndSavePlot(destPath):
     plt.cla()
     plt.close()
 
+def _logLine(line, extraText, logFile):
+    (x, y) = line.GetCoordiantes()
+    plt.plot(x,y, label=extraText)
+    print(extraText, file=logFile)
+    print(line.points, file=logFile)
+
 class Sample:
     def __init__(self, fileName, minArea, maxArea, deltaXFactor):
         self._points = []
@@ -115,29 +121,17 @@ class Sample:
         
         with open("{0}.txt".format(self._destFileName), 'w') as f:
             for index,line in enumerate(lines):
+                _logLine(line, "{0} raw".format(index), f)
+
                 linearReprLine = line.GetLinearReprLine()
                 lineLength = linearReprLine.GetLineLength()
-
                 if lineLength < self._deltaXFactor * deltaX:
                     continue
                 
-                (x, y) = line.GetCoordiantes()
-                plt.plot(x,y, label="{0} raw".format(index))
-                (linearX, linearY) = linearReprLine.GetCoordiantes()
-                plt.plot(linearX, linearY, '-', label="{0} linear".format(index))
-
-                print("raw line index:{0}, {1}".format(index, line), file=f)
-                print(line.points, file=f)
-
-                print("linear line index:{0}, {1}".format(index, linearReprLine), file=f)
-                print(linearReprLine.points, file=f)
+                _logLine(linearReprLine, "{0} linear".format(index), f)
 
                 line.FilterOutFarPoints(linearReprLine)
-                print("afterFilteartion line index:{0}, {1}".format(index, line), file=f)
-                print(line.points, file=f)
-
-                (xAfterFilteringFarPoints, yAfterFilteringFarPoints) = line.GetCoordiantes()
-                plt.plot(xAfterFilteringFarPoints, yAfterFilteringFarPoints, label="{0} after filteration".format(index))
+                _logLine(line, "{0} after filteration".format(index), f)
 
                 self._lines.append(line)
 
