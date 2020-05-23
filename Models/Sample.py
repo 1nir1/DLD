@@ -60,10 +60,17 @@ def _createLinesFromPoints(points):
 
     return lines
 
+def _getLinesWithSufficientNumberOfPoints(lines):
+    averageNumberOfPointsPerLine = sum([len(line.points) for line in lines]) / len(lines)
+    averageNumberOfPointsPerLineRounded = round(averageNumberOfPointsPerLine, 4)
+    linesWithSufficientNumberOfPoints = [line for line in lines if len(line.points) > 0.5 * averageNumberOfPointsPerLineRounded]
+    return linesWithSufficientNumberOfPoints
+
 class Sample:
     def __init__(self, fileName, minArea, maxArea, deltaXFactor):
         self._points = []
         self._lines = []
+        self._linesWithSufficientNumberOfPoints = []
 
         baseFileName = os.path.splitext(fileName)[0]
         self._baseFileName = baseFileName
@@ -103,7 +110,7 @@ class Sample:
 
                 print("raw line index:{0}, {1}".format(index, line), file=f)
                 print(line.points, file=f)
-                
+
                 print("linear line index:{0}, {1}".format(index, linearReprLine), file=f)
                 print(linearReprLine.points, file=f)
 
@@ -113,6 +120,8 @@ class Sample:
 
                 (xAfterFilteringFarPoints, yAfterFilteringFarPoints) = line.GetCoordiantes()
                 plt.plot(xAfterFilteringFarPoints, yAfterFilteringFarPoints, label="{0} after filteration".format(index))
+
+                self._lines.append(line)
 
         ax=plt.gca()
         ax.xaxis.tick_top() 
@@ -129,9 +138,15 @@ class Sample:
         plt.cla()
         plt.close()
 
+        self._linesWithSufficientNumberOfPoints = _getLinesWithSufficientNumberOfPoints(self._lines)
+
         print("Done analyzing sample {0}".format(self._baseFileName))
     
     def SaveResults(self):
         print("Saving results for sample {0}".format(self._baseFileName))
+        numberOfPoints = len(self._points)
+        numberOfGoodPoints = sum([len(line.points) for line in self._linesWithSufficientNumberOfPoints])
+        orderFactor = numberOfGoodPoints / numberOfPoints
+        print("numberOfGoodPoints: {0}, numberOfPoints: {1}, orderFactor: {2}".format(numberOfGoodPoints, numberOfPoints, orderFactor))
         print("Done saving results for sample {0}".format(self._baseFileName))
         print("")
