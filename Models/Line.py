@@ -38,6 +38,12 @@ class Line:
         allPoints.sort(key=lambda point: point.x)
         return Line(allPoints)
 
+    def __str__(self):
+        return "averageYPoint: {0}, average radius: {1}, biggestYPoint {2}, smallestYPoint {3}".format(self.GetAverageYPoint(), self.GetAverageRadius(), self._biggestYPoint, self._smallestYPoint)
+
+    def __repr__(self):
+        return str(self)
+
     @property
     def points(self):
         return self._points
