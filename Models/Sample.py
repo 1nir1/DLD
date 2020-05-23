@@ -85,7 +85,7 @@ def _configureAndSavePlot(destPath):
 def _logLine(line, extraText, logFile):
     (x, y) = line.GetCoordiantes()
     plt.plot(x,y, label=extraText)
-    print(extraText, file=logFile)
+    print("{0} - {1}".format(extraText, line), file=logFile)
     print(line.points, file=logFile)
 
 class Sample:
