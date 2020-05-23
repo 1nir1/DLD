@@ -39,6 +39,10 @@ def MergeCloseLines(lines):
     
     return lines
 
+def FilterSingleDots(lines):
+    filteredLines = [line for line in lines if line.Size() > 1]
+    return filteredLines
+
 def CreateLinesFromPoints(points):
     lines = []
 
@@ -55,8 +59,7 @@ def CreateLinesFromPoints(points):
             line.AddPoint(point)
             lines.append(line)
 
-    filteredLines = [line for line in lines if line.Size() > 1]
-    return filteredLines
+    return lines
 
 (fileNames, minArea, maxArea, deltaXFactor) = GetCommandLineParams()
 for fileName in fileNames:
@@ -68,6 +71,7 @@ for fileName in fileNames:
 
     lines = CreateLinesFromPoints(points)
     lines = MergeCloseLines(lines)
+    lines = FilterSingleDots(lines)
 
     destPath = "Dest/{0}".format(baseFileName)
     Path(destPath).mkdir(parents=True, exist_ok=True)
