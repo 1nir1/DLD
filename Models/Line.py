@@ -6,10 +6,10 @@ from math import sqrt
 from numpy.polynomial.polynomial import polyfit
 from math import hypot
 
-def _getDistanceBetweenTwoPoints(point1, point2):
+def _getDistanceBetweenTwoPoints(point1, point2, xFactor = 1):
     # TODO - check algo
     # sqrt((x2 − x1)^2 + (y2 − y1)^2) − (r2 + r1)
-    distanceBetweenTwoPoints = sqrt(pow((point1.x - point2.x), 2)+ pow((point1.y - point2.y ), 2)) - (point1.radius + point2.radius)
+    distanceBetweenTwoPoints = sqrt(xFactor * pow((point1.x - point2.x), 2) + pow((point1.y - point2.y), 2)) - (point1.radius + point2.radius)
     return distanceBetweenTwoPoints
 
 def _getAverage(values):
@@ -94,17 +94,19 @@ class Line:
             if self._biggestXPoint == point:
                 self._biggestXPoint = max(self._points, key=lambda point: point.x)
 
-    def CanPointBeAdded(self, point):
+    def CanPointBeAdded(self, point, radiusFactor = 1):
         if len(self._points) == 0:
             return True
         
-        if point.y - point.radius <= self._biggestYPoint.y + self._biggestYPoint.radius and point.y + point.radius >= self._smallestYPoint.y - self._smallestYPoint.radius:
+        if point.y - point.radius * radiusFactor <= self._biggestYPoint.y + self._biggestYPoint.radius * radiusFactor and \
+             point.y + point.radius * radiusFactor >= self._smallestYPoint.y - self._smallestYPoint.radius * radiusFactor:
             return True
         
         return False
 
     def GetPointProximityValue(self, point):
-        proximityValue = _getDistanceBetweenTwoPoints(point, self._biggestXPoint)
+        proximityValues = map(lambda x: _getDistanceBetweenTwoPoints(x, point, 0.4), self._points)
+        proximityValue = min(proximityValues)
         roundedProximityValue = round(proximityValue, 4)
         return roundedProximityValue
     
@@ -160,10 +162,10 @@ class Line:
             secondLineAverageY = line2.GetAverageYPoint()
 
             if firstLineAverageY > secondLineAverageY:
-                if firstLineAverageY - firstLineAverageRadius*10 < secondLineAverageY + secondLineAverageRadius*10:
+                if firstLineAverageY - firstLineAverageRadius * 2 < secondLineAverageY + secondLineAverageRadius * 2:
                     return True
             else:
-                if firstLineAverageY + firstLineAverageRadius*10 > secondLineAverageY - secondLineAverageRadius*10:
+                if firstLineAverageY + firstLineAverageRadius * 2 > secondLineAverageY - secondLineAverageRadius * 2:
                     return True
 
         return False
