@@ -7,11 +7,11 @@ from Models.Point import Point
 from Models.Line import Line
 from Models.DataExtractor import ExtractPointsByArea
 
-def _uniqueFile(basename, ext):
-    actualname = "%s.%s" % (basename, ext)
+def _uniqueFolder(prefix):
+    actualname = "%s/output" % (prefix)
     c = itertools.count()
     while os.path.exists(actualname):
-        actualname = "%s (%d).%s" % (basename, next(c), ext)
+        actualname = "%s/output%d" % (prefix, next(c))
     return actualname
 
 def _movingWindow(n, iterable):
@@ -66,6 +66,22 @@ def _getLinesWithSufficientNumberOfPoints(lines):
     linesWithSufficientNumberOfPoints = [line for line in lines if len(line.points) > 0.5 * averageNumberOfPointsPerLineRounded]
     return linesWithSufficientNumberOfPoints
 
+def _configureAndSavePlot(destPath):
+    ax=plt.gca()
+    ax.xaxis.tick_top() 
+    ax.invert_yaxis()
+    # Shrink current axis by 20%
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+    # Put a legend to the right of the current axis
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})
+
+    plt.savefig("{0}.pdf".format(destPath))
+    plt.clf()
+    plt.cla()
+    plt.close()
+
 class Sample:
     def __init__(self, fileName, minArea, maxArea, deltaXFactor):
         self._points = []
@@ -76,7 +92,8 @@ class Sample:
         self._baseFileName = baseFileName
         self._sourceFile = "Source/{0}.csv".format(self._baseFileName)
 
-        destPath = "Dest/{0}".format(self._baseFileName)
+        destPathPrefix = "Dest/{0}".format(self._baseFileName)
+        destPath = _uniqueFolder(destPathPrefix)
         Path(destPath).mkdir(parents=True, exist_ok=True)
         self._destFileName = "{0}/{1}".format(destPath, self._baseFileName)
 
@@ -89,13 +106,14 @@ class Sample:
 
         self._points = ExtractPointsByArea(self._sourceFile, self._minArea, self._maxArea)
         self._points.sort(key=lambda point: point.x)
+
         deltaX = self._points[-1].x - self._points[0].x
 
         lines = _createLinesFromPoints(self._points)
         lines = _mergeCloseLines(lines)
         lines = _filterSingleDots(lines)
-
-        with open(_uniqueFile(self._destFileName,"txt"), 'w') as f:
+        
+        with open("{0}.txt".format(self._destFileName), 'w') as f:
             for index,line in enumerate(lines):
                 linearReprLine = line.GetLinearReprLine()
                 lineLength = linearReprLine.GetLineLength()
@@ -123,20 +141,7 @@ class Sample:
 
                 self._lines.append(line)
 
-        ax=plt.gca()
-        ax.xaxis.tick_top() 
-        ax.invert_yaxis()
-        # Shrink current axis by 20%
-        box = ax.get_position()
-        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-
-        # Put a legend to the right of the current axis
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})
-
-        plt.savefig(_uniqueFile(self._destFileName, "pdf"))
-        plt.clf()
-        plt.cla()
-        plt.close()
+        _configureAndSavePlot(self._destFileName)
 
         self._linesWithSufficientNumberOfPoints = _getLinesWithSufficientNumberOfPoints(self._lines)
 
