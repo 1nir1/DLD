@@ -2,6 +2,7 @@ import os
 import itertools
 from pathlib import Path
 import matplotlib.pyplot as plt
+import Models.Consts
 
 from Models.Point import Point
 from Models.Line import Line
@@ -62,8 +63,8 @@ def _createLinesFromPoints(points):
 
 def _getLinesWithSufficientNumberOfPoints(lines):
     averageNumberOfPointsPerLine = sum([len(line.points) for line in lines]) / len(lines)
-    averageNumberOfPointsPerLineRounded = round(averageNumberOfPointsPerLine, 4)
-    linesWithSufficientNumberOfPoints = [line for line in lines if len(line.points) > 0.5 * averageNumberOfPointsPerLineRounded]
+    averageNumberOfPointsPerLineRounded = round(averageNumberOfPointsPerLine, Models.Consts.ROUNDED_DIGITS_NUMBER)
+    linesWithSufficientNumberOfPoints = [line for line in lines if len(line.points) > Models.Consts.AVERAGE_NUMBER_OF_POINTS_FACTOR * averageNumberOfPointsPerLineRounded]
     return linesWithSufficientNumberOfPoints
 
 def _configureAndSavePlot(destPath):
@@ -107,7 +108,7 @@ class Sample:
         self._maxArea = maxArea
         self._deltaXFactor = deltaXFactor
 
-    def Analyze(self, saveLog):
+    def Analyze(self):
         print("Analyzing sample {0}".format(self._baseFileName))
 
         self._points = ExtractPointsByArea(self._sourceFile, self._minArea, self._maxArea)

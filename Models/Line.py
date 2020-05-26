@@ -1,5 +1,6 @@
 import statistics
 import numpy as np
+import Models.Consts
 
 from Models.Point import Point
 from math import sqrt
@@ -7,14 +8,13 @@ from numpy.polynomial.polynomial import polyfit
 from math import hypot
 
 def _getDistanceBetweenTwoPoints(point1, point2, xFactor = 1):
-    # TODO - check algo
     # sqrt((x2 − x1)^2 + (y2 − y1)^2) − (r2 + r1)
     distanceBetweenTwoPoints = sqrt(xFactor * pow((point1.x - point2.x), 2) + pow((point1.y - point2.y), 2)) - (point1.radius + point2.radius)
     return distanceBetweenTwoPoints
 
 def _getAverage(values):
         averageValues = statistics.median(values)
-        roundedAverageValues = round(averageValues, 4)
+        roundedAverageValues = round(averageValues, Models.Consts.ROUNDED_DIGITS_NUMBER)
         return roundedAverageValues
 
 
@@ -111,9 +111,9 @@ class Line:
         return False
 
     def GetPointProximityValue(self, point):
-        proximityValues = map(lambda x: _getDistanceBetweenTwoPoints(x, point, 0.4), self._points)
+        proximityValues = map(lambda x: _getDistanceBetweenTwoPoints(x, point, Models.Consts.POINT_DISTANCE_X_FACTOR), self._points)
         proximityValue = min(proximityValues)
-        roundedProximityValue = round(proximityValue, 4)
+        roundedProximityValue = round(proximityValue, Models.Consts.ROUNDED_DIGITS_NUMBER)
         return roundedProximityValue
     
     def GetCoordiantes(self):
@@ -142,7 +142,6 @@ class Line:
         for myPoint, comparedLinePoint in zip(myPoints, comparedLine._points):
             distance = _getDistanceBetweenTwoPoints(myPoint, comparedLinePoint)
             if  distance > averageRadius:
-                #print("removed {0} because distance was {1} and averageRadius is {2} myPoint {3} otherPoint {4}".format(myPoint, distance, averageRadius, myPoint, comparedLinePoint))
                 self.RemovePoint(myPoint)
     
     def GetLinearReprLine(self):
@@ -168,10 +167,10 @@ class Line:
             secondLineAverageY = line2.GetAverageYPoint()
 
             if firstLineAverageY > secondLineAverageY:
-                if firstLineAverageY - firstLineAverageRadius * 2 < secondLineAverageY + secondLineAverageRadius * 2:
+                if firstLineAverageY - firstLineAverageRadius * Models.Consts.MERGE_RADIUS_FACTOR < secondLineAverageY + secondLineAverageRadius * Models.Consts.MERGE_RADIUS_FACTOR:
                     return True
             else:
-                if firstLineAverageY + firstLineAverageRadius * 2 > secondLineAverageY - secondLineAverageRadius * 2:
+                if firstLineAverageY + firstLineAverageRadius * Models.Consts.MERGE_RADIUS_FACTOR > secondLineAverageY - secondLineAverageRadius * Models.Consts.MERGE_RADIUS_FACTOR:
                     return True
 
         return False
