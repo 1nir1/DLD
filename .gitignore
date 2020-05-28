@@ -1,4 +1,5 @@
 *.pyc
 /Source/*
 /Dest/*
+/test/*
 .vscode/*
