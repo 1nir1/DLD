@@ -2,12 +2,13 @@ import os
 import itertools
 from pathlib import Path
 import matplotlib.pyplot as plt
-import Models.Consts
+from math import sqrt
 
+import Models.Consts
 from Models.Point import Point
 from Models.Line import Line
 from Models.DataExtractor import ExtractPointsByArea
-
+        
 def _uniqueFolder(prefix):
     actualname = "%s/output" % (prefix)
     c = itertools.count()
@@ -29,7 +30,7 @@ def _mergeCloseLines(lines):
         # we sort by the average y point, becuase it is a "blocking-factor" if line1 and line3 have line2 btw them, they cannot be merged!
         lines.sort(key=lambda line: line.GetAverageYPoint())
         wereLinesMerged = False
-        for coupleOflines in _movingWindow(2, lines):
+        for coupleOflines in _movingWindow(Models.Consts.WINDOW_LOOKUP_NUMBER, lines):
             if Line.CanLinesBeMerged(coupleOflines[0], coupleOflines[1]):
                 linesAfterMerge.append(coupleOflines[0] + coupleOflines[1])
                 lines.remove(coupleOflines[0])
@@ -112,6 +113,32 @@ class Sample:
         self._maxArea = maxArea
         self._deltaXFactor = deltaXFactor
 
+    def GetOrderFactor(self):
+        if len(self._points) == 0:
+            raise Exception("No points loaded into the sample") 
+
+        numberOfPoints = len(self._points)
+        numberOfGoodPoints = sum([len(line.points) for line in self._linesWithSufficientNumberOfPoints])
+        orderFactor = numberOfGoodPoints / numberOfPoints
+        orderFactorRounded = round(orderFactor, Models.Consts.ROUNDED_DIGITS_NUMBER)
+        return orderFactorRounded
+
+    def GetAverageDistanceBetweenPoints(self):
+        if len(self._points) == 0:
+            raise Exception("No points loaded into the sample") 
+
+        averageDistanceBetweenPointsInLine = 0
+        for line in self._linesWithSufficientNumberOfPoints:
+            distanceBetweenPoints = 0
+
+            for coupleOfPoints in _movingWindow(Models.Consts.WINDOW_LOOKUP_NUMBER, line.points):
+                distanceBetweenPoints += Point.GetDistanceBetweenTwoPoints(coupleOfPoints[0], coupleOfPoints[1])
+            averageDistanceBetweenPointsInLine += round(distanceBetweenPoints / len(line.points), Models.Consts.ROUNDED_DIGITS_NUMBER)
+
+        averageDistanceBetweenPoints = averageDistanceBetweenPointsInLine / len(self._linesWithSufficientNumberOfPoints)
+        averageDistanceBetweenPointsRounded = round(averageDistanceBetweenPoints, Models.Consts.ROUNDED_DIGITS_NUMBER)
+        return averageDistanceBetweenPointsRounded
+
     def Analyze(self):
         print("Analyzing sample {0}".format(self._baseFileName))
 
@@ -148,12 +175,11 @@ class Sample:
     
     def SaveResults(self):
         print("Saving results for sample {0}".format(self._baseFileName))
-        numberOfPoints = len(self._points)
-        numberOfGoodPoints = sum([len(line.points) for line in self._linesWithSufficientNumberOfPoints])
-        orderFactor = numberOfGoodPoints / numberOfPoints
         
+        orderFactor = self.GetOrderFactor()
         averageNumberOfPointsPerRow = _getAverageNumberOfPointsPerLine(self._linesWithSufficientNumberOfPoints)
+        averageDistanceBetweenPoints = self.GetAverageDistanceBetweenPoints()
 
-        print("numberOfGoodPoints: {0}, numberOfPoints: {1}, orderFactor: {2} averageNumberOfPointsPerRow: {3}".format(numberOfGoodPoints, numberOfPoints, orderFactor, averageNumberOfPointsPerRow))
+        print("orderFactor: {0} averageNumberOfPointsPerRow: {1} averageDistanceBetweenPoints: {2}".format(orderFactor, averageNumberOfPointsPerRow, averageDistanceBetweenPoints))
         print("Done saving results for sample {0}".format(self._baseFileName))
         print("")

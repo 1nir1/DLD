@@ -1,3 +1,5 @@
+from math import sqrt
+
 class Point: 
     def __init__(self, x, y, feret):
         self._x = float(x)
@@ -28,4 +30,10 @@ class Point:
 
     def __repr__(self):
         return str(self)
+
+    @staticmethod
+    def GetDistanceBetweenTwoPoints(point1, point2, xFactor = 1):
+        # sqrt((x2 − x1)^2 + (y2 − y1)^2) − (r2 + r1)
+        distanceBetweenTwoPoints = sqrt(xFactor * pow((point1.x - point2.x), 2) + pow((point1.y - point2.y), 2)) - (point1.radius + point2.radius)
+        return distanceBetweenTwoPoints
     

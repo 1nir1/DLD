@@ -3,20 +3,13 @@ import numpy as np
 import Models.Consts
 
 from Models.Point import Point
-from math import sqrt
 from numpy.polynomial.polynomial import polyfit
 from math import hypot
-
-def _getDistanceBetweenTwoPoints(point1, point2, xFactor = 1):
-    # sqrt((x2 − x1)^2 + (y2 − y1)^2) − (r2 + r1)
-    distanceBetweenTwoPoints = sqrt(xFactor * pow((point1.x - point2.x), 2) + pow((point1.y - point2.y), 2)) - (point1.radius + point2.radius)
-    return distanceBetweenTwoPoints
 
 def _getAverage(values):
         averageValues = statistics.median(values)
         roundedAverageValues = round(averageValues, Models.Consts.ROUNDED_DIGITS_NUMBER)
         return roundedAverageValues
-
 
 class Line:
     def __init__(self, points = None):
@@ -111,7 +104,7 @@ class Line:
         return False
 
     def GetPointProximityValue(self, point):
-        proximityValues = map(lambda x: _getDistanceBetweenTwoPoints(x, point, Models.Consts.POINT_DISTANCE_X_FACTOR), self._points)
+        proximityValues = map(lambda x: Point.GetDistanceBetweenTwoPoints(x, point, Models.Consts.POINT_DISTANCE_X_FACTOR), self._points)
         proximityValue = min(proximityValues)
         roundedProximityValue = round(proximityValue, Models.Consts.ROUNDED_DIGITS_NUMBER)
         return roundedProximityValue
@@ -140,7 +133,7 @@ class Line:
         averageRadius = self.GetAverageRadius()
         myPoints = self._points.copy()
         for myPoint, comparedLinePoint in zip(myPoints, comparedLine._points):
-            distance = _getDistanceBetweenTwoPoints(myPoint, comparedLinePoint)
+            distance = Point.GetDistanceBetweenTwoPoints(myPoint, comparedLinePoint)
             if  distance > averageRadius:
                 self.RemovePoint(myPoint)
     
