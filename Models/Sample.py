@@ -61,10 +61,14 @@ def _createLinesFromPoints(points):
 
     return lines
 
-def _getLinesWithSufficientNumberOfPoints(lines):
+def _getAverageNumberOfPointsPerLine(lines):
     averageNumberOfPointsPerLine = sum([len(line.points) for line in lines]) / len(lines)
     averageNumberOfPointsPerLineRounded = round(averageNumberOfPointsPerLine, Models.Consts.ROUNDED_DIGITS_NUMBER)
-    linesWithSufficientNumberOfPoints = [line for line in lines if len(line.points) > Models.Consts.AVERAGE_NUMBER_OF_POINTS_FACTOR * averageNumberOfPointsPerLineRounded]
+    return averageNumberOfPointsPerLineRounded
+
+def _getLinesWithSufficientNumberOfPoints(lines):
+    averageNumberOfPointsPerLine = _getAverageNumberOfPointsPerLine(lines)
+    linesWithSufficientNumberOfPoints = [line for line in lines if len(line.points) > Models.Consts.AVERAGE_NUMBER_OF_POINTS_FACTOR * averageNumberOfPointsPerLine]
     return linesWithSufficientNumberOfPoints
 
 def _configureAndSavePlot(destPath):
@@ -78,7 +82,7 @@ def _configureAndSavePlot(destPath):
     # Put a legend to the right of the current axis
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})
 
-    plt.savefig("{0}.pdf".format(destPath))
+    plt.savefig("{0}_graph.pdf".format(destPath))
     plt.clf()
     plt.cla()
     plt.close()
@@ -120,7 +124,7 @@ class Sample:
         lines = _mergeCloseLines(lines)
         lines = _filterSingleDots(lines)
         
-        with open("{0}.txt".format(self._destFileName), 'w') as f:
+        with open("{0}_log.txt".format(self._destFileName), 'w') as f:
             for index,line in enumerate(lines):
                 _logLine(line, "{0} raw".format(index), f)
 
@@ -147,6 +151,9 @@ class Sample:
         numberOfPoints = len(self._points)
         numberOfGoodPoints = sum([len(line.points) for line in self._linesWithSufficientNumberOfPoints])
         orderFactor = numberOfGoodPoints / numberOfPoints
-        print("numberOfGoodPoints: {0}, numberOfPoints: {1}, orderFactor: {2}".format(numberOfGoodPoints, numberOfPoints, orderFactor))
+        
+        averageNumberOfPointsPerRow = _getAverageNumberOfPointsPerLine(self._linesWithSufficientNumberOfPoints)
+
+        print("numberOfGoodPoints: {0}, numberOfPoints: {1}, orderFactor: {2} averageNumberOfPointsPerRow: {3}".format(numberOfGoodPoints, numberOfPoints, orderFactor, averageNumberOfPointsPerRow))
         print("Done saving results for sample {0}".format(self._baseFileName))
         print("")
