@@ -83,6 +83,9 @@ def _configureAndSavePlot(destPath):
     # Put a legend to the right of the current axis
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})
 
+    plt.rcParams['pdf.fonttype'] = 42
+    plt.rcParams['ps.fonttype'] = 42
+
     plt.savefig("{0}_graph.pdf".format(destPath))
     plt.clf()
     plt.cla()
