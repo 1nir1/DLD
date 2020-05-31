@@ -180,6 +180,14 @@ class Sample:
         averageNumberOfPointsPerRow = _getAverageNumberOfPointsPerLine(self._linesWithSufficientNumberOfPoints)
         averageDistanceBetweenPoints = self.GetAverageDistanceBetweenPoints()
 
-        print("orderFactor: {0} averageNumberOfPointsPerRow: {1} averageDistanceBetweenPoints: {2}".format(orderFactor, averageNumberOfPointsPerRow, averageDistanceBetweenPoints))
+        with open("{0}_output.txt".format(self._destFileName), 'w') as f:
+            print("fileName: {0}".format(self._baseFileName), file = f)
+            print("minArea: {0}".format(self._minArea), file = f)
+            print("maxArea: {0}".format(self._maxArea), file = f)
+            print("deltaXFactor: {0}".format(self._deltaXFactor), file = f)
+            print("orderFactor: {0}".format(orderFactor), file = f)
+            print("averageNumberOfPointsPerRow: {0}".format(averageNumberOfPointsPerRow), file = f)
+            print("averageDistanceBetweenPoints: {0}".format(averageDistanceBetweenPoints), file = f)
+
         print("Done saving results for sample {0}".format(self._baseFileName))
         print("")
