@@ -182,12 +182,12 @@ class Sample:
 
         with open("{0}_output.txt".format(self._destFileName), 'w') as f:
             print("fileName: {0}".format(self._baseFileName), file = f)
-            print("minArea: {0}".format(self._minArea), file = f)
-            print("maxArea: {0}".format(self._maxArea), file = f)
-            print("deltaXFactor: {0}".format(self._deltaXFactor), file = f)
-            print("orderFactor: {0}".format(orderFactor), file = f)
-            print("averageNumberOfPointsPerRow: {0}".format(averageNumberOfPointsPerRow), file = f)
-            print("averageDistanceBetweenPoints: {0}".format(averageDistanceBetweenPoints), file = f)
+            print("minArea: {:.4f}".format(self._minArea), file = f)
+            print("maxArea: {:.4f}".format(self._maxArea), file = f)
+            print("deltaXFactor: {:.4f}".format(self._deltaXFactor), file = f)
+            print("orderFactor: {:.4f}".format(orderFactor), file = f)
+            print("averageNumberOfPointsPerRow: {:.4f}".format(averageNumberOfPointsPerRow), file = f)
+            print("averageDistanceBetweenPoints: {:.4f}".format(averageDistanceBetweenPoints), file = f)
 
         print("Done saving results for sample {0}".format(self._baseFileName))
         print("")
