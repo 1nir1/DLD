@@ -1,7 +1,7 @@
 # DLD
 Dewetting Line Detector.
 
-This project was created for identifying and analyzing line-patterns in a CSV file format input.
+This project was created for identifying and analyzing line-patterns of polymer droplets by using a CSV file format input.
 
 ## Input
 Each line in the CSV **input** describes a dot in 2D-space, those dots have a Feret diameter, X-center and Y-center. Input must be added to **Source** directory (if no such directory exist on you local computer, please create it).
